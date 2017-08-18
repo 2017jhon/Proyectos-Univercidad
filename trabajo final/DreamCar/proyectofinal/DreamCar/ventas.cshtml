@@ -1,0 +1,313 @@
+﻿@RenderPage("header.cshtml")
+@RenderPage("NavBar.cshtml")
+@RenderPage("NavSide.cshtml")
+
+
+
+<script type="text/javascript">
+    
+        function validar() {
+            if ($("#codigo_user").val() == "") {
+                alert("El  Campo Codigo es Requerido");
+                $("#codigo_user").focus();
+                return false;
+
+            } else if ($("#nombre").val() == "") {
+                alert("El Campo Nombre es requerido");
+                $("#nombre").focus();
+                return false;
+            } else if ($("#apellidos").val() == "") {
+                alert("El Campo Apellido es requerido");
+                $("#apellidos").focus();
+                return false;
+
+            } else if ($("#cargo").val() == "") {
+                alert("El Campo Cargo es requerido");
+                $("#cargo").focus();
+                return false;
+
+            } else if ($("#sueldo").val() == "") {
+                alert("El Campo Sueldo es requerido");
+                $("#sueldo").focus();
+                return false;
+            }
+
+            return true;
+        }
+        
+        
+    var cant = 0;
+    var precio = 0;
+    var subt=0;
+    var total = 0;
+    var itbis = 0.18;
+    var impuesto = 0;
+    $(document).ready(function () {
+        $("#Calcular").click(function () {
+            cant = $('#Cantidad').val();
+            subt = eval($('#Precio').val() *cant);
+            $('#SubTotal').val(subt);
+            itbis = eval(subt * 0.18);
+            $('#Itbis').val(itbis);
+            total = eval(subt + itbis);
+            $('#Total').val(total);
+            
+          
+                
+        });
+    });
+
+</script>
+@{ 
+    DreamCar.ventas objVentas = new DreamCar.ventas();
+    string descripcion = "";
+    double precio = 0;
+    int cantidad = 0;
+    double itbis = 0;
+    double subtotal = 0;
+    double total = 0;
+
+
+}
+<div class="row">
+    <div class="col-md-10 col-sm-10 col-xs-10">
+        
+
+            @{
+                
+                    if (Request["Buscar"] != null)
+                    {
+                        foreach (var itemVehiculo in DreamCar.VariablesGlobales.listaVehiculos)
+                        {
+                        
+                            if (itemVehiculo.codigo == Request["txtCodigo"])
+                            {
+                                descripcion = itemVehiculo.marca + " " + itemVehiculo.modelo;
+                                precio = Double.Parse(itemVehiculo.precio.ToString());
+
+                            }
+
+                        }
+
+                    }
+
+                
+            }
+               
+
+        @{
+            if (Request["btnGuardarVenta"] != null)
+            {
+               
+   
+                    objVentas.Cliente = Request["txtCliente"];
+                    objVentas.Vendedor = Request["vendedores"];
+                    objVentas.Descripcion = Request["Descripcion"];
+                    objVentas.Cantidad = int.Parse(Request["Cantidad"]);
+                    objVentas.Precio = decimal.Parse(Request["Precio"]);
+                    objVentas.SubTotal = decimal.Parse(Request["SubTotal"]);
+                    objVentas.Itbis = decimal.Parse(Request["Itbis"]);
+                    objVentas.Total = decimal.Parse(Request["Total"]);
+
+
+                    DreamCar.VariablesGlobales.CrearVentas(objVentas);
+
+
+                }
+
+
+            
+            else if (Request["btBorrar"] != null)
+            {
+                //capturo el objeto a eliminar
+                var query = (from cl in DreamCar.VariablesGlobales.listaVentas
+                             where cl.Numero == DreamCar.VariablesGlobales.Numero
+                             select cl).ToList();
+
+                //lo convierte a un objeto del tipo de la clase clientes
+                objVentas = query.First();
+
+                DreamCar.VariablesGlobales.listaVentas.Remove(objVentas);
+
+            }
+
+            else if (Request["btEditar"] != null)
+            {//Codigo para editar va aqui
+
+                foreach (var itemVentas in DreamCar.VariablesGlobales.listaVentas)
+                {
+                    if (itemVentas.Numero == DreamCar.VariablesGlobales.Numero)
+                    {
+
+                        itemVentas.Cliente = Request["txtCliente"];
+                        itemVentas.Vendedor = Request["vendedores"];
+                        itemVentas.Descripcion = Request["Descripcion"];
+                        itemVentas.Cantidad = int.Parse(Request["Cantidad"]);
+                        itemVentas.Precio = decimal.Parse(Request["Precio"]);
+                        itemVentas.SubTotal = decimal.Parse(Request["SubTotal"]);
+                        itemVentas.Itbis = decimal.Parse(Request["Itbis"]);
+                        itemVentas.Total = decimal.Parse(Request["Total"]);
+
+                        DreamCar.VariablesGlobales.Numero = 0;
+                    }
+
+                }
+            }
+
+            else if (Request["btCancelar"] != null)
+            {
+
+                DreamCar.VariablesGlobales.Numero = 0;
+
+            }
+        }
+            <h1>Registrar Ventas</h1>
+            <br />
+        <form method="post">
+            <fieldset class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Numero</label>
+                       
+                            <input type="text" class="form-control" id="numero" name="txtCodigo" placeholder="Codigo">
+                            <button class="pull-right btn" type="submit" style="" name="Buscar">Buscar</button>
+                        
+                        
+                        
+                    </div>
+                    <div class="col-md-6">
+                        <label > Vendedor </label>
+                        <select class="form-control" name="vendedores">
+                            @{
+
+                                foreach (var cliente in DreamCar.VariablesGlobales.listaClientes)
+                                {
+                                    <option value="@cliente.NombreCompleto">@cliente.NombreCompleto</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <br />
+            </fieldset>
+            <fieldset>
+
+            </fieldset>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset class="form-group">
+                        <label> Cliente </label>
+                        <input type="text" class="form-control" id="Descripcion" placeholder="Cliente" name="txtCliente">
+                        
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label> Descripcion</label>
+                        <input type="text" class="form-control"readonly="readonly" id="Descripcion" name="Descripcion" placeholder="Descripcion" value="@descripcion">
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <label> Cantidad </label>
+                       
+                            <input type="number" min="1" class="form-control" id="Cantidad" placeholder="Cantidad" name="Cantidad">
+                            <button class="pull-right btn" type="button" style=""id="Calcular"  name="Calcular">Calcular</button>
+                        
+                             </fieldset>
+
+                </div>
+                <div class="col-md-6">
+
+                    <fieldset class="form-group">
+                        <label> Precio </label>
+                        <input type="number" min="1" class="form-control" id="Precio" name="Precio" readonly="readonly" placeholder="Precio" value="@precio">
+                    </fieldset>
+
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            <label> SubTotal </label>
+                            <input type="number" class="form-control" id="SubTotal" readonly="readonly" name="SubTotal" placeholder="SubTotal" value="@subtotal">
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
+
+                        <fieldset class="form-group">
+                            <label> Itbis </label>
+                            <input type="number" class="form-control" id="Itbis" readonly="readonly" name="Itbis" placeholder="Itbis" value="@itbis">
+                        </fieldset>
+                    </div>
+                    <div class="col-md-12">
+                        <fieldset class="form-group">
+                            <label> Total </label>
+                            <input type="number" class="form-control" id="Total" readonly="readonly" name="Total" placeholder="Total"value="@total">
+                        </fieldset>
+                        </div>
+                    
+                    </div>
+
+            </div>
+            @{
+
+                if (DreamCar.VariablesGlobales.IdClientes > 0)
+                {
+                    <input type="submit" class="btn btn-primary" name="btnEditar" value="Editar" />
+                    <input type="submit" class="btn btn-danger" name="BtnBorrar" value="Borrar" />
+
+                }
+                else
+                {
+                    <input type="submit" class="btn btn-success" name="btnGuardarVenta" value="Registrar" />
+                }
+            }
+            <input type="submit" class="btn btn-warning" name="btnSalir" value="Salir" />
+
+        </form>
+
+        </div>
+        </div>
+<br />
+
+    <table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Cantidad</th>
+            <th>Nombre</th>
+            <th>Precio unit.</th>
+            <th>Total</th>
+            <th>Cliente</th>
+            <th>Vendedor</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int x = 0;
+        }
+        @foreach (var ventas in DreamCar.VariablesGlobales.listaVentas)
+            {
+            <form method="post">
+                <tr>
+
+                    <td style="display:none"> <input type="text" name="btEdit" value="@ventas.Numero" /></td>
+                    <td>@ventas.Cantidad</td>
+                    <td>@ventas.Descripcion</td>
+                    <td>@ventas.Precio</td>
+                    <td>@ventas.Total</td>
+                    <td>@ventas.Cliente</td>
+                    <td>@ventas.Vendedor</td>
+                </tr>
+            </form>
+            x++;
+        }
+        @{
+            if (x <= 0)
+            {
+                <tr>
+                    <td>No existen Vehiculos en Ventas</td>
+
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+    
+ <!-- /. ROW  -->
+@RenderPage("footer.cshtml");

@@ -1,0 +1,73 @@
+﻿@RenderPage("header.cshtml")
+@RenderPage("NavBar.cshtml")
+@RenderPage("NavSide.cshtml")
+
+<div id="main-div" class="container-fluid">
+    <h1>Consulta de vehiculos</h1>
+    </br>
+    </br>
+   
+        <table class="table table-hover table-striped table-condensed">
+            <tr>
+                <th>ID</th>
+                <th>Codigo</th>
+                <th>Modelo</th>
+                <th>Marca</th>
+                <th>Ano</th>
+                <th>Categoria</th>
+                <th>Precio</th>
+                <th>Transmicion</th>
+                <th>Kilometraje</th>
+                <th>Cantidad</th>
+            </tr>
+
+            @{
+                int x = 0;
+            }
+            @foreach (var vehiculo in DreamCar.VariablesGlobales.listaVehiculos)
+            {
+                <form method="post">
+                    <tr>
+                        <td>  <button type="submit" class="btn btn-default"><i class="fa fa-edit "></i>@vehiculo.Id</button></td>
+                        <td style="display:none" > <input type="text" name="btEdit" value="@vehiculo.Id" /></td>
+                        <td>@vehiculo.codigo</td>
+                        <td>@vehiculo.modelo</td>
+                        <td>@vehiculo.marca</td>
+                        <td>@vehiculo.ano</td>
+                        <td>@vehiculo.categoria</td>
+                        <td>@vehiculo.precio</td>
+                        <td>@vehiculo.transmicion</td>
+                        <td>@vehiculo.kilometraje</td>
+                        <td>@vehiculo.cantidad</td>
+                    </tr>
+                </form>
+                x++;
+            }
+                    @{
+                        if (x <= 0)
+                        {
+                            <tr>
+                                <td>No existen Vehiculos Disponibles</td>
+
+                            </tr>
+                        }
+                    }
+
+
+                    @{
+                        if (Request["btEdit"] != null)
+                        {
+
+
+                            DreamCar.VariablesGlobales.IdVehiculo = int.Parse(Request["btEdit"]);
+                            Response.Redirect("~/Agregar.cshtml");
+                        }
+
+                    }
+
+</table>
+    
+
+</div>
+ 
+@RenderPage("footer.cshtml");

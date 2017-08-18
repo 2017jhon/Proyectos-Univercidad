@@ -1,0 +1,374 @@
+﻿@RenderPage("header.cshtml")
+@RenderPage("NavBar.cshtml")
+@RenderPage("NavSide.cshtml")
+<div class="row">
+    <div class="col-md-10 col-sm-10 col-xs-10">
+        @{
+
+            DreamCar.CIClientes objClientes = new DreamCar.CIClientes();
+
+            string Id = "";
+            string NombreCompleto = "";
+            string CorreoElectronico = "";
+            string Nacionalidad = "";
+            string Sexo = "";
+            string FechadeNacimiento = "";
+            string Telefono = "";
+            string Telefonocelular = "";
+            bool validacion = false;
+            bool edit = false;
+            bool borrardo = false;
+
+        }
+
+
+        <!--  <div class="container" id="main-div">-->
+
+        @{
+            if (Request["btCrear"] != null)
+            {
+                if (Request["txtId"] != null && Request["txtId"] != "")
+                {
+                    objClientes.Id = int.Parse(Request["txtId"]);
+                    objClientes.NombreCompleto = Request["txtNombreCompleto"].ToString();
+                    objClientes.Correoelectronico = Request["txtCorreoelectronico"].ToString();
+                    objClientes.Nacionalidad = Request["txtNacionalidad"];
+                    objClientes.FechadeNacimiento = Request["txtFechadeNacimiento"].ToString();
+                    objClientes.Sexo = Request["txtSexo"].ToString();
+                    objClientes.Telefono = Request["txtTelefono"].ToString();
+                    objClientes.Telefonocelular = Request["txtTelefonocelular"].ToString();
+                    DreamCar.VariablesGlobales.crearClientes(objClientes);
+                    validacion = true;
+
+                }
+                else
+                {
+                    validacion = false;
+                }
+
+            }
+            else if (Request["btBorrar"] != null)
+            {
+                //capturo el objeto a eliminar
+                var query = (from cl in DreamCar.VariablesGlobales.listaClientes
+                             where cl.Id == DreamCar.VariablesGlobales.IdClientes
+                             select cl).ToList();
+
+                //lo convierte a un objeto del tipo de la clase clientes
+                objClientes = query.First();
+
+                DreamCar.VariablesGlobales.listaClientes.Remove(objClientes);
+
+                borrardo = true;
+            }
+
+            else if (Request["btEditar"] != null)
+            {//Codigo para editar va aqui
+
+                foreach (var itemClientes in DreamCar.VariablesGlobales.listaClientes)
+                {
+                    if (itemClientes.Id == DreamCar.VariablesGlobales.IdClientes)
+                    {
+
+                        itemClientes.NombreCompleto = Request["txtNombreCompleto"].ToString();
+                        itemClientes.Correoelectronico = Request["txtCorreoelectronico"].ToString();
+                        itemClientes.Nacionalidad = Request["txtNacionalidad"].ToString();
+                        itemClientes.Sexo = Request["txtSexo"].ToString();
+                        itemClientes.Telefono = Request["txtTelefono"].ToString();
+                        itemClientes.Telefonocelular = Request["txtTelefonocelular"].ToString();
+                        edit = true;
+                         DreamCar.VariablesGlobales.IdClientes = 0;
+                    }
+
+                }
+            }
+
+            else if (Request["btCancelar"] != null)
+            {
+
+                DreamCar.VariablesGlobales.IdClientes = 0;
+
+            }
+                }
+
+
+
+
+        @{
+            ////Cargando los datos aqui podemos registrar los clientes
+            if (DreamCar.VariablesGlobales.IdClientes > 0)
+            {
+                <h1>Editar Empleado</h1>
+                foreach (var itemClientes in DreamCar.VariablesGlobales.listaClientes)
+                {
+                    @itemClientes.Id
+                    @DreamCar.VariablesGlobales.IdClientes
+
+                    if (itemClientes.Id == DreamCar.VariablesGlobales.IdClientes)
+                    {
+                        Id = DreamCar.VariablesGlobales.IdClientes.ToString();
+                        Id = itemClientes.Id.ToString();
+                        NombreCompleto = itemClientes.NombreCompleto.ToString();
+                        CorreoElectronico = itemClientes.Correoelectronico.ToString();
+                        Nacionalidad = itemClientes.Nacionalidad.ToString();
+                        FechadeNacimiento = itemClientes.FechadeNacimiento.ToString();
+                        Sexo = itemClientes.Sexo.ToString();
+                        Telefono = itemClientes.Telefono.ToString();
+                        Telefonocelular = itemClientes.Telefonocelular.ToString();
+
+                    }
+
+                }
+            }
+            else
+
+            {
+                //Creamos el formulario para agregar los clientes
+
+                <h1 style = "text-align:center"> Registro de Empleado</h1 > 
+
+                <br/>
+                <br/>
+
+
+            }
+
+            }
+
+
+        <form id="registrationForm" method="post" class="form-horizontal mitad" action="#">
+            <div>
+                <div>
+                    <div class="form-group">
+
+                        <label class="col-lg-4 control-label">ID</label>
+
+                        <div class="col-lg-4">
+
+                            <input type="number" name="txtID" class="form-control " value="@Id"/>
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label class="col-lg-4 control-label">NombreCompleto</label>
+
+                        <div class="col-lg-4">
+
+                            <input type="text" class="form-control" name="txtNombreCompleto" value="@NombreCompleto"/>
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label class="col-lg-4 control-label">Correo Electrónico</label>
+
+                        <div class="col-lg-4">
+
+                            <input type="text" class="form-control" name="txtCorreoElectronico" value="@CorreoElectronico"/>
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+                        <div class="form-group">
+
+                            <label class="col-lg-4 control-label">Nacionalidad</label>
+
+                            <div class="col-lg-4">
+                                <select name="txtNacionalidad" class="form-control">
+                                 
+                                    <option @(Nacionalidad.Contains("Dominicana") ? "selected" : "")>Dominicana</option>
+                                    <option @(Nacionalidad.Contains("Mexicana") ? "selected" : "")>Mexicana</option>
+                                    <option @(Nacionalidad.Contains("Venezolano") ? "selected" : "")>Venezolano</option>
+                                    <option @(Nacionalidad.Contains("Americano") ? "selected" : "")>Americano</option>
+                                    <option @(Nacionalidad.Contains("Chino") ? "selected" : "")>Chino</option>
+                                </select>
+                            
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label class="col-lg-4 control-label">Fecha de Nacimiento</label>
+
+                        <div class="col-lg-4">
+
+                            <input type="date" class="form-control" name="txtFechadeNacimiento" value="@FechadeNacimiento"/>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label class="col-lg-3 control-label">Sexo</label>
+
+                        <div class="col-lg-9">
+
+                            <div class="radio">
+
+                                <label>
+
+                                    <input type="radio" name="txtSexo" value="M" @(Sexo.Contains('M') ? "checked":"")
+                                           
+                                           /> Masculino
+
+                                </label>
+
+                            </div>
+
+                            <div class="radio">
+
+                                <label>
+
+                                    <input type="radio" name="txtSexo" value="F"  @(Sexo.Contains('F') ? "checked":"")/> Femenino
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="col-lg-4 control-label">Teléfono</label>
+                           <div class="col-lg-4">
+                        <input type="text" class="form-control" name="txtTelefono" value="@Telefono"/>
+                       </div>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label class="col-lg-4 control-label">Teléfono Celular</label>
+
+                        <div class="col-lg-4">
+
+                            <input type="text" class="form-control" name="txtTelefonocelular" value="@Telefonocelular"/>
+
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+            </div>
+
+
+            @{
+
+                //Esta es el codigo para crear el registro
+                if (Request["btCrear"] != null)
+                {
+                    if (validacion)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            <strong>Cliente Creado exitosamente!!!</strong>
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Campos Vacios</strong>
+                        </div>
+                    }
+                }
+
+
+                if (Request["btEditar"] != null)
+                {
+                    if (edit)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            <strong> Cliente editado exitosamente!!!</strong>
+                        </div>
+
+                    }
+
+                }
+                if (Request["btBorrar"] != null)
+                {
+                    if (borrardo)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Cliente eliminado exitosamente!!!</strong>
+                        </div>
+
+                    }
+
+
+                }
+            }
+
+
+            <div class="col-xs-3">
+            </div>
+            <div class="col-xs-9">
+                <br>
+            </div>
+
+            <div>
+
+                @{
+                    if (DreamCar.VariablesGlobales.IdClientes > 0)
+
+                    {
+                        <center>
+                            <div class="btn-group">
+
+                                <button type="submit" class="btn btn-primary" name="btEditar"><i class="fa fa-refresh"></i> Actualizar</button>
+                                <button type="submit" class="btn btn-danger" name="btBorrar"><i class="fa fa-pencil"></i> Borrar</button>
+                                <input type="submit" class="btn btn-warning" name="btCancelar" value="Cancelar" />
+
+
+                            </div>
+                        </center>
+
+                    }
+                    else
+                    {
+                                <center>
+                                    <div class="btn-group">
+
+                                        <button type="submit" class="btn btn-success" name="btCrear"><i class="fa fa-floppy-o "></i> Guardar  </button>
+                                        <input type="submit" class="btn btn-warning" name="btCancelar" value="Cancelar" />
+
+                                    </div>
+                                </center>
+                                }
+                                }
+
+
+
+
+                        </div>
+        </form>
+
+    </div>
+</div>
+
+
+@RenderPage("footer.cshtml");
+
+

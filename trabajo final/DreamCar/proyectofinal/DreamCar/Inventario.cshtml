@@ -1,0 +1,86 @@
+﻿@RenderPage("header.cshtml")
+@RenderPage("NavBar.cshtml")
+@RenderPage("NavSide.cshtml")
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="page-header">
+            Productos Existentes
+        </h1>
+    </div>
+</div>
+
+@{ 
+    int id = 0;
+
+    if (Request["Update"] != null)
+    {/////Codigo para editar va aqui
+
+        foreach (var itemVehiculo in DreamCar.VariablesGlobales.listaVehiculos)
+        {
+            if (itemVehiculo.Id == int.Parse(Request["txtIdVehiculo"]))
+            {
+                itemVehiculo.precio = decimal.Parse(Request["txtCosto"]);
+                itemVehiculo.cantidad = int.Parse(Request["txtCantidad"].ToString());
+
+            }
+
+        }
+    }
+    else if (Request["btCancelar"] != null)
+    {
+        DreamCar.VariablesGlobales.IdVehiculo = 0;
+
+    }
+}
+
+<!-- /. ROW  -->
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="bs-example" data-example-id="simple-responsive-table">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <content>Existencia Minina</content>
+                            <th>Codigo</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Cateroria</th>
+                            <th>Costo Unitario </th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            foreach (var itemVehiculo in DreamCar.VariablesGlobales.listaVehiculos)
+                            {
+                                
+                                <form method="post">
+                                    <tr>
+                                        <input type="text" style="display:none" value="@itemVehiculo.Id" name="txtIdVehiculo" />
+                                        <th scope="row">@itemVehiculo.codigo.ToString()</th>
+                                        <td>@itemVehiculo.marca.ToString()</td>
+                                        <td>@itemVehiculo.modelo.ToString()</td>
+                                        <td>@itemVehiculo.categoria.ToString()</td>
+
+                                        <td><input type="text" name="txtCosto" value="@itemVehiculo.precio" /></td>
+                                        <td><input type="number" name="txtCantidad" value="@itemVehiculo.cantidad"/></td>
+                                        <td><input type="submit" name="Update" value="Update" /></td>
+                                    </tr>
+                                </form>
+                            }
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-responsive">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /. ROW  -->
+@RenderPage("footer.cshtml");

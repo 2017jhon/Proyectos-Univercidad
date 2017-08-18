@@ -1,0 +1,337 @@
+﻿@RenderPage("header.cshtml")
+@RenderPage("NavBar.cshtml")
+@RenderPage("NavSide.cshtml")
+
+<div class="row">
+    <div class="col-md-10 col-sm-10 col-xs-10">
+        @{
+            string Id = "";
+
+            DreamCar.ClVehiculo objVehiculo = new DreamCar.ClVehiculo();
+
+
+            string marca = "";
+            string ano = "";
+            string modelo = "";
+            string precio = "";
+            string chasis = "";
+            string transmicion = "";
+            string kilometraje = "";
+            string categoria = "";
+            string codigo = "";
+            bool validacion = false;
+            bool edit = false;
+            bool borrardo = false;
+            int cantidad = 0;
+        
+
+         
+
+
+
+        }
+
+
+    <!--  <div class="container" id="main-div">-->  
+
+            @{
+
+                    if (Request["btCrear"] != null)
+                    {
+                        if (Request["txtId"] != null && Request["txtId"] != "") {
+                            objVehiculo.Id = int.Parse(Request["txtId"]);
+                            objVehiculo.codigo = Request["txtCodigo"].ToString();
+                            objVehiculo.marca = Request["txtMarca"].ToString();
+                            objVehiculo.ano = int.Parse(Request["txtAno"]);
+                            objVehiculo.modelo = Request["txtModelo"].ToString();
+                            objVehiculo.precio = decimal.Parse(Request["txtprecio"]);
+                            objVehiculo.categoria = Request["txtCategoria"].ToString();
+                            objVehiculo.chasis = Request["txtchasis"].ToString();
+                            objVehiculo.transmicion = Request["txtTransmicion"].ToString();
+                            objVehiculo.kilometraje = Request["txtKilometraje"].ToString();
+                            objVehiculo.cantidad = int.Parse(Request["txtCantidad"].ToString());
+                            DreamCar.VariablesGlobales.crearVehiculo(objVehiculo);
+                            validacion = true;
+
+                        }
+                        else
+                        {
+                            validacion = false;
+
+                        }
+
+                    }
+                    else if (Request["btBorrar"] != null)
+                    {
+                        //capturo el objeto a eliminar
+                        var query = (from cl in DreamCar.VariablesGlobales.listaVehiculos
+                                     where cl.Id == DreamCar.VariablesGlobales.IdVehiculo
+                                     select cl).ToList();
+
+                        //lo convierte a un objeto del tipo de la clase vehiculo
+                        objVehiculo = query.First();
+
+                        DreamCar.VariablesGlobales.listaVehiculos.Remove(objVehiculo);
+
+                        borrardo = true;
+                    }
+                    else if (Request["btEditar"] != null)
+                    {/////Codigo para editar va aqui
+
+                        foreach (var itemVehiculo in DreamCar.VariablesGlobales.listaVehiculos)
+                        {
+                            if (itemVehiculo.Id == DreamCar.VariablesGlobales.IdVehiculo)
+                            {
+                                itemVehiculo.codigo = Request["txtCodigo"].ToString();
+                                itemVehiculo.marca = Request["txtMarca"].ToString();
+                                itemVehiculo.ano = int.Parse(Request["txtAno"]);
+                                itemVehiculo.modelo = Request["txtModelo"].ToString();
+                                itemVehiculo.precio = decimal.Parse(Request["txtprecio"]);
+                                itemVehiculo.chasis = Request["txtchasis"].ToString();
+                                itemVehiculo.categoria = Request["txtCategoria"].ToString();
+                                itemVehiculo.transmicion = Request["txtTransmicion"].ToString();
+                                itemVehiculo.kilometraje = Request["txtKilometraje"].ToString();
+                                itemVehiculo.cantidad = int.Parse(Request["txtCantidad"].ToString());
+                                edit = true;
+                                DreamCar.VariablesGlobales.IdVehiculo = 0;
+
+                            }
+
+                        }
+                    }
+                    else if (Request["btCancelar"] != null)
+                    {
+                        DreamCar.VariablesGlobales.IdVehiculo = 0;
+
+                    }
+            }
+
+
+
+
+            @{
+                ////Cargando la presentacion de los datos
+                if (DreamCar.VariablesGlobales.IdVehiculo > 0)
+                {
+                    <h1 style="text-align:center; margin-bottom:10px;">Editar Vehiculo</h1>
+                  
+
+                    foreach (var itemVehiculo in DreamCar.VariablesGlobales.listaVehiculos)
+                    {
+                       
+                     
+                        if (itemVehiculo.Id == DreamCar.VariablesGlobales.IdVehiculo)
+                        {
+                            Id = DreamCar.VariablesGlobales.IdVehiculo.ToString();
+                            codigo = itemVehiculo.codigo.ToString();
+                            marca = itemVehiculo.marca.ToString();
+                            modelo = itemVehiculo.modelo.ToString();
+                            ano = itemVehiculo.ano.ToString();
+                            precio = itemVehiculo.precio.ToString();
+                            chasis = itemVehiculo.chasis.ToString();
+                            categoria = itemVehiculo.categoria.ToString();
+                            transmicion = itemVehiculo.transmicion.ToString();
+                            kilometraje = itemVehiculo.kilometraje.ToString();
+                            cantidad = itemVehiculo.cantidad;
+
+
+                        }
+
+                    }
+                }
+                else
+                {
+                    <h1>Agregar Vehiculo</h1>
+                    <br />
+                    <br />
+                }
+            }
+        
+            <form class="form-horizontal" method="post">
+                <div class="form-group">
+                    <label class="control-label col-xs-3">ID</label>
+                    <div class="col-xs-9">
+                        <input type="number" class="form-control" id="inputEmail" name="txtId" placeholder="ID" value="@Id">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Codigo</label>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" id="inputEmail" name="txtCodigo" placeholder="Codigo" value="@codigo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Marca</label>
+                    <div class="col-xs-9">
+            <select name="txtMarca" class="form-control">
+                <option value="0">Todas las Marcas</option>
+                <option @(marca.Contains("Honda") ? "selected":"") >Honda</option>
+                <option @(marca.Contains("Toyota") ? "selected":"")>Toyota</option>
+                <option @(marca.Contains("Acura") ? "selected" : "")>Acura</option>
+                <option @(marca.Contains("Alfa Romeo") ? "selected" : "")>Alfa Romeo</option>
+                <option @(marca.Contains("Audi") ? "selected" : "")>Audi</option>
+                <option @(marca.Contains("Bentley") ? "selected" : "")>Bentley</option>
+                <option @(marca.Contains("BMW") ? "selected" : "")>BMW</option>     
+                </select>
+                      
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Modelo</label>
+                    <div class="col-xs-9">
+                        <select name="txtModelo" class="form-control">
+                            <option >Todas las Marcas</option>
+                            <option @(modelo.Contains("Accord") ? "selected" : "")>Accord</option>
+                            <option @(modelo.Contains("Camry") ? "selected" : "")>Camry</option>
+                            <option @(modelo.Contains("ILX") ? "selected" : "")>ILX</option>
+                            <option @(modelo.Contains("Gulieta") ? "selected" : "")>Gulieta</option>
+                            <option @(modelo.Contains("A6") ? "selected" : "")>A6</option>
+                            <option @(modelo.Contains("MK VI") ? "selected" : "")>MK VI</option>
+                            <option @(modelo.Contains("Serie 4") ? "selected" : "")>Serie 4</option>
+                            
+                    </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Año</label>
+                    <div class="col-xs-9">
+                        <select name="txtAno" class="form-control">
+                            
+                            @{
+                                for (int x = 1990; x < 2017; x++)
+                                {
+                                    <option @(ano.Contains(x.ToString()) ? "selected" : "")>@x</option>
+                                }
+                            }
+                            </select>
+                            
+            </div>
+                </div>
+                
+                
+                
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Categoria</label>
+                    
+                    <div class="col-xs-9">
+                        <select name="txtCategoria" class="form-control">
+                            <option value="0">Todas las Categorias</option>
+                            <option @(categoria.Contains("Sedán") ? "selected" : "")>Sedán</option>
+                            <option @(categoria.Contains("Compacto") ? "selected" : "")>Compacto</option>
+                            <option @(categoria.Contains("Jeepeta") ? "selected" : "")>Jeepeta</option>
+                            <option @(categoria.Contains("Camioneta") ? "selected" : "")>Camioneta</option>
+                            <option @(categoria.Contains("Coupé/Sport") ? "selected" : "")>Coupé/Sport</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Precio</label>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" placeholder="Precio" name="txtPrecio" value="@precio">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Chasis</label>
+                    <div class="col-xs-9">
+                        <input type="tel" class="form-control" placeholder="Chasis" name="txtchasis" value="@chasis">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Transmición</label>
+                    <div class="col-xs-9">
+                        <select name="txtTransmicion" class="form-control">
+                            <option @(transmicion.Contains("Automatico") ? "selected" : "")>Automatico</option>
+                            <option @(transmicion.Contains("Mecanico") ? "selected" : "")>Mecanico</option>
+                         </select>
+</div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Kilometraje</label>
+                    <div class="col-xs-9">
+                        <input type="text" class="form-control" placeholder="Kilometraje" name="txtKilometraje" value="@kilometraje">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">Cantidad</label>
+                    <div class="col-xs-9">
+                        <input type="number" class="form-control" placeholder="Cantidad" name="txtCantidad" value="@cantidad">
+                    </div>
+                </div>
+                <div class="col-xs-3">
+                   </div>
+                    <div class="col-xs-9">
+                        @{
+
+                            if (Request["btCrear"] != null)
+                            {
+                                if (validacion)
+                                {
+                                    <div class="alert alert-success" role="alert"> 
+                                         <strong>Vehiculo creado exitosamente!!!</strong> 
+                                     </div>
+
+                                }
+                                else
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        <strong>Campos Vacios</strong>
+                                    </div>
+                                }
+                            }
+
+                       
+                        if (Request["btEditar"] != null)
+                        {
+                        if (edit)
+                        {
+                        <div class="alert alert-success" role="alert">
+                            <strong>Vehiculo editado exitosamente!!!</strong>
+                        </div>
+
+                                }
+
+                            }
+                            if (Request["btBorrar"] != null)
+                            {
+                                if (borrardo)
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        <strong>Vehiculo eliminado exitosamente!!!</strong>
+                                    </div>
+
+                                }
+
+                            
+                        }
+                        }
+                        
+                       
+                    </div>
+                <div class="col-xs-3">
+                </div>
+                    <div class="col-xs-9">
+                        <br>
+                        @{
+
+                            if (DreamCar.VariablesGlobales.IdVehiculo > 0)
+                            {
+
+                                <button  type="submit" class="btn btn-primary" name="btEditar"><i class="fa fa-refresh"></i> Actualizar</button>
+
+                                <button type="submit" class="btn btn-danger" name="btBorrar"><i class="fa fa-pencil"></i> Borrar</button>
+
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-success" name="btCrear"><i class="fa fa-plus "></i> Guardar  </button>
+                            }
+                        }
+                        <input type="submit" class="btn btn-warning" name="btCancelar" value="Cancelar" />
+                    </div>
+</form>
+        </div>
+    </div>
+
+    @RenderPage("footer.cshtml");
